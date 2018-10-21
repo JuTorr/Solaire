@@ -47,15 +47,6 @@ Fonction ConversionTempsHeure
 */
 float ConversionTempsHeure(int heure,int minute,int seconde);
 
-/* // T1
-Fonction ConversionHeureLegal2Solaire #TODO : Finir def ici
-{
-    Role: Convertir une heure(décimale) légale en heure solaire
-    Entrée : année : 1 entier ,
-
-    }*/
-
-
 /*
 Fonction SaisieObligatoireReel
 {

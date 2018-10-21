@@ -17,7 +17,7 @@ int main(){
         int NB_JOUR_AN;
         bool fin= false;
         int choix;
-
+        float tauxmoyenhumiditerelative; // Sera rentrée par l'utilisateur
         float declinaison;
         float anglehoraire,azimut,hauteursoleil;
         float heuresolaire,heuredecimale;
@@ -28,7 +28,9 @@ int main(){
         heure = SaisieObligatoireReel("Veuillez saisir une heure");
         minute = SaisieObligatoireReel("Veuillez saisir une minute");
         seconde = SaisieObligatoireReel("Veuillez saisir une seconde");
-        altitude = SaisieObligatoireReel("Veuillez saisir l'altitude de votre lieu");*/
+        altitude = SaisieObligatoireReel("Veuillez saisir l'altitude de votre lieu");
+         tauxmoyenhumiditerelative = SaisieObligatoireReel("Veuillez saisir le taux d'humidité relative de votre lieu");
+         */
 
 
         if(EstBissextile(annee)){
@@ -81,7 +83,7 @@ int main(){
             cout << "Menu ? \n"
                  << "1.rayonnement global reu en un point du globe en fonction du jour de l'annee"<< annee<< endl
                  << "2.rayonnement global recu en un point du globe en fonction de l'heure pour le jour "<< jour << " de l'annee "<<annee <<endl
-                 << "Autre : Fin\n"
+                 << "0 : Fin\n"
                  ;
             while (!(cin >> choix)) { // On force choix à prendre une valeur numérique
                 cin.clear();
@@ -91,17 +93,39 @@ int main(){
             switch(choix){
                 case 1:{
                     int j =0;
+                    string final;
+                    final = "Jour Rayonnement(W/m2) \n";
+                    float rayoglob,rayodiff,rayodirect,coeffinci,enersol;
                     heuredecimale = ConversionTempsHeure(heure,minute,seconde);// Hors boucle car ne depend pas du jour, on considere l'heure légale constante
-
-
                     while(j < NB_JOUR_AN){
                         declinaison = CalculDeclinaison(NB_JOUR_AN,j);
+                        // heuresolaire = CorrectionHeureLegal2Solaire(     );
+                        anglehoraire = CalculAngleHoraire(heuresolaire);
                         hauteursoleil = CalculHauteurSoleil(declinaison,latitude,anglehoraire);
                         azimut = CalculAzimut(declinaison,hauteursoleil);
 
-                        // heuresolaire = CorrectionHeureLegal2Solaire(     );
+                        coeffinci = CalculCoefficientIncidence(inclinaisoncapteur,hauteursoleil,orientationcapteur,azimut);;
+                        enersol = CalculEnergieSolaire(NB_JOUR_AN,j);
+                        rayodirect = CalculRayonnementSolaireDirect(enersol,hauteursoleil,tauxmoyenhumiditerelative,environnement,temperature,altitude);
+                        rayodiff = CalculRayonnementSolaireDiffus(hauteursoleil,inclinaisoncapteur);
+                        rayoglob = CalculRayonnementSolaireGlobal(coeffinci,rayodirect,rayodiff);
+                        final.append(to_string(j));
+                        final.append(" "); // Séparateur
+                        final.append(to_string(rayoglob));
+                        final.append("\n");
                         j++;
                     }
+                    // Ici saisie dans csv
+                    string nomfichier = "Rayonnement en fonction des jours de l'annee "+to_string(annee)+".csv";
+                    ofstream fichier(nomfichier, ios::out | ios::trunc);  //déclaration du flux et ouverture du fichier
+                    if(fichier) // Si le fichier s'est ouvert
+                    {
+                        fichier << final;
+                        cout << "Le fichier a bien ete cree";
+                        fichier.close();  //  referme le fichier
+                    }
+                    else
+                        cerr << "Erreur à l'ouverture !" << endl;
                     break;}
                 case 2:{
                     break;}
