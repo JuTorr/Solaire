@@ -3,4 +3,4 @@ project(Solaire)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Solaire main.cpp Fonctions.cpp Fonctions.h)
+add_executable(Solaire main.cpp Solaire.cpp Solaire.h)
